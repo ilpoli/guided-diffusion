@@ -868,7 +868,8 @@ class GaussianDiffusion:
         transformation_percent=[],
         inpainting_mode=False,
         mask_inpaint=None,
-        skip_timesteps_orig=None
+        skip_timesteps_orig=None,
+        init_image_without_sampling=False
     ):
         """
         Use DDIM to sample from the model and yield intermediate samples from
@@ -892,7 +893,10 @@ class GaussianDiffusion:
 
         if init_image is not None:
             my_t = th.ones([shape[0]], device=device, dtype=th.long) * indices[0]
-            img = self.q_sample(init_image, my_t, img)
+            if init_image_without_sampling:
+                img = init_image
+            else:
+                img = self.q_sample(init_image, my_t, img)
 
         if progress:
             # Lazy import so that we don't depend on tqdm.
